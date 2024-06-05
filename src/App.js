@@ -1,21 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { pattern } from "./Helpers/Pattern";
-import useWindowSize from 'react-use/lib/useWindowSize'
-import Confetti from 'react-confetti'
+import useWindowSize from "react-use/lib/useWindowSize";
+import Confetti from "react-confetti";
 
 function App() {
   const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
   const [player, setPlayer] = useState(false);
   const [result, setResult] = useState({ winner: "none" });
-  const { width, height } = useWindowSize()
+  const { width, height } = useWindowSize();
 
   useEffect(() => {
     checkWin();
   }, [board]);
 
+  console.log(board)
   const handleValue = (index) => {
     let newBoard = [...board];
     if (newBoard[index] !== "") {
+      return;
+    }
+    if(result.winner!=='none'){
       return;
     }
     if (result.winner === "none") {
@@ -26,6 +30,11 @@ function App() {
     }
   };
   const checkWin = () => {
+    if ( result.winner === "none") {
+      if(!board.includes("")){
+        setResult({ winner: "ties" });
+      }
+      }
     pattern.forEach((currentPattern) => {
       if (
         board[currentPattern[0]] === "X" &&
@@ -42,13 +51,13 @@ function App() {
         setResult({ winner: "O" });
       }
     });
-    if (!board.includes("") && result.winner === "none") {
-      setResult({ winner: "ties" });
-    }
+    
+
+    
   };
   const handleRestart = () => {
-    setBoard(["", "", "", "", "", "", "", "", ""]);
     setResult({ winner: "none" });
+    setBoard(["", "", "", "", "", "", "", "", ""]);
   };
   return (
     <div className="w-[100vw] h-[100vh] bg-blue-300 flex justify-center items-center flex-col">
@@ -58,23 +67,27 @@ function App() {
             Player <span className="text-2xl">'{player ? "O" : "X"}'</span> Turn
           </h2>
         )}
-        {(result.winner === "X" || result.winner === "O") && (<>
-          <Confetti width={width} height={height} />
-          <h2 className="font-bold text-xl">
-            Player <span className="text-2xl">{result.winner}</span> is Winner
-          </h2>
-        </>
+        {(result.winner === "X" || result.winner === "O") && (
+          <>
+            <Confetti width={width} height={height} />
+            <h2 className="font-bold text-xl">
+              Player <span className="text-2xl">{result.winner}</span> is Winner
+            </h2>
+          </>
         )}
-        {result.winner === 'ties' &&<h2 className="font-bold text-xl">
-            Game <span className="text-2xl">{(result.winner).toUpperCase()}</span> !!!
-          </h2> }
+        {result.winner === "ties" && (
+          <h2 className="font-bold text-xl">
+            Game <span className="text-2xl">{result.winner.toUpperCase()}</span>{" "}
+            !!!
+          </h2>
+        )}
       </div>
       <div className="w-[400px] h-[400px] bg-blue-500 ">
         <div className="w-full h-full grid grid-cols-3 items-center pl-3 py-2">
           {board.map((value, index) => (
             <div
               className={`${
-                board[index] === "O" && "bg-red-400" 
+                board[index] === "O" && "bg-red-400"
               } hover:bg-blue-300 w-[120px] h-[120px] bg-blue-400 cursor-pointer items-center flex justify-center text-4xl`}
               key={index}
               onClick={() => {
